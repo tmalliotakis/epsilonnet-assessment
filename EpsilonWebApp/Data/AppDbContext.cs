@@ -14,7 +14,7 @@ namespace EpsilonWebApp.Data
             modelBuilder.Entity<Customer>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+                entity.Property(e => e.Id).HasDefaultValueSql("NEWSEQUENTIALID()");
                 entity.Property(e => e.CompanyName).HasMaxLength(200);
                 entity.Property(e => e.ContactName).HasMaxLength(200);
                 entity.Property(e => e.Address).HasMaxLength(500);

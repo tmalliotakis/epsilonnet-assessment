@@ -1,0 +1,67 @@
+@using EpsilonWebApp.Models
+
+<div class="modal show d-block" tabindex="-1" style="background:rgba(0,0,0,0.5)">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <EditForm Model="Model" OnValidSubmit="Submit">
+                <DataAnnotationsValidator />
+                <div class="modal-header">
+                    <h5 class="modal-title">@Title</h5>
+                    <button type="button" class="btn-close" @onclick="OnCancel"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-2">
+                        <label class="form-label">Company Name</label>
+                        <InputText class="form-control" @bind-Value="Model.CompanyName" />
+                        <ValidationMessage For="() => Model.CompanyName" />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Contact Name</label>
+                        <InputText class="form-control" @bind-Value="Model.ContactName" />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Address</label>
+                        <InputText class="form-control" @bind-Value="Model.Address" />
+                    </div>
+                    <div class="row">
+                        <div class="col mb-2">
+                            <label class="form-label">City</label>
+                            <InputText class="form-control" @bind-Value="Model.City" />
+                        </div>
+                        <div class="col mb-2">
+                            <label class="form-label">Region</label>
+                            <InputText class="form-control" @bind-Value="Model.Region" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col mb-2">
+                            <label class="form-label">Postal Code</label>
+                            <InputText class="form-control" @bind-Value="Model.PostalCode" />
+                        </div>
+                        <div class="col mb-2">
+                            <label class="form-label">Country</label>
+                            <InputText class="form-control" @bind-Value="Model.Country" />
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Phone</label>
+                        <InputText class="form-control" @bind-Value="Model.Phone" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="OnCancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public Customer Model { get; set; } = new();
+    [Parameter] public string Title { get; set; } = "Customer";
+    [Parameter] public EventCallback OnSave { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private async Task Submit() => await OnSave.InvokeAsync();
+}

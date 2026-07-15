@@ -29,7 +29,6 @@ namespace EpsilonWebApp.Services
 
         public async Task<Customer> CreateAsync(Customer customer)
         {
-            customer.Id = Guid.NewGuid();
             db.Customers.Add(customer);
             await db.SaveChangesAsync();
             return customer;
