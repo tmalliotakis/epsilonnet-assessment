@@ -1,0 +1,28 @@
+@page "/logout"
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@inject IHttpContextAccessor HttpContextAccessor
+@inject NavigationManager Nav
+
+<PageTitle>Logout</PageTitle>
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <h1>Logout</h1>
+        <p>Are you sure you want to log out?</p>
+
+        <EditForm Model="this" method="post" OnValidSubmit="LogoutUser" FormName="logout">
+            <button type="submit" class="btn btn-primary">Log out</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private async Task LogoutUser()
+    {
+        await HttpContextAccessor.HttpContext!.SignOutAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme);
+
+        Nav.NavigateTo("login");
+    }
+}
