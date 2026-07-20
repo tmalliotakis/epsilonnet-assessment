@@ -1,60 +1,42 @@
 @using EpsilonWebApp.Models
 
-<div class="modal show d-block" tabindex="-1" style="background:rgba(0,0,0,0.5)">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <EditForm Model="Model" OnValidSubmit="Submit">
-                <DataAnnotationsValidator />
-                <div class="modal-header">
-                    <h5 class="modal-title">@Title</h5>
-                    <button type="button" class="btn-close" @onclick="OnCancel"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-2">
-                        <label class="form-label">Company Name</label>
-                        <InputText class="form-control" @bind-Value="Model.CompanyName" />
-                        <ValidationMessage For="() => Model.CompanyName" />
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">Contact Name</label>
-                        <InputText class="form-control" @bind-Value="Model.ContactName" />
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">Address</label>
-                        <InputText class="form-control" @bind-Value="Model.Address" />
-                    </div>
-                    <div class="row">
-                        <div class="col mb-2">
-                            <label class="form-label">City</label>
-                            <InputText class="form-control" @bind-Value="Model.City" />
-                        </div>
-                        <div class="col mb-2">
-                            <label class="form-label">Region</label>
-                            <InputText class="form-control" @bind-Value="Model.Region" />
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col mb-2">
-                            <label class="form-label">Postal Code</label>
-                            <InputText class="form-control" @bind-Value="Model.PostalCode" />
-                        </div>
-                        <div class="col mb-2">
-                            <label class="form-label">Country</label>
-                            <InputText class="form-control" @bind-Value="Model.Country" />
-                        </div>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">Phone</label>
-                        <InputText class="form-control" @bind-Value="Model.Phone" />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="OnCancel">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-            </EditForm>
-        </div>
-    </div>
+<MudOverlay Visible="true" DarkBackground="true" />
+
+<div style="position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:1400;">
+    <MudPaper Elevation="8" Class="pa-6" Style="width:520px; max-width:95vw; max-height:90vh; overflow:auto;">
+        <EditForm Model="Model" OnValidSubmit="Submit">
+            <DataAnnotationsValidator />
+            <MudText Typo="Typo.h6" Class="mb-4">@Title</MudText>
+
+            <MudTextField @bind-Value="Model.CompanyName" Label="Company Name"
+                          For="@(() => Model.CompanyName)" Class="mb-2" />
+            <MudTextField @bind-Value="Model.ContactName" Label="Contact Name"
+                          For="@(() => Model.ContactName)" Class="mb-2" />
+            <MudTextField @bind-Value="Model.Address" Label="Address"
+                          For="@(() => Model.Address)" Class="mb-2" />
+
+            <div class="d-flex gap-3">
+                <MudTextField @bind-Value="Model.City" Label="City"
+                              For="@(() => Model.City)" Class="mb-2" />
+                <MudTextField @bind-Value="Model.Region" Label="Region"
+                              For="@(() => Model.Region)" Class="mb-2" />
+            </div>
+            <div class="d-flex gap-3">
+                <MudTextField @bind-Value="Model.PostalCode" Label="Postal Code"
+                              For="@(() => Model.PostalCode)" Class="mb-2" />
+                <MudTextField @bind-Value="Model.Country" Label="Country"
+                              For="@(() => Model.Country)" Class="mb-2" />
+            </div>
+            <MudTextField @bind-Value="Model.Phone" Label="Phone"
+                          For="@(() => Model.Phone)" Class="mb-4" />
+
+            <div class="d-flex justify-end gap-2">
+                <MudButton Variant="Variant.Text" OnClick="OnCancel">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled"
+                           Color="Color.Primary">Save</MudButton>
+            </div>
+        </EditForm>
+    </MudPaper>
 </div>
 
 @code {

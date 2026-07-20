@@ -8,53 +8,45 @@
 
 <PageTitle>Customers</PageTitle>
 
-<h1>Customers</h1>
+<MudText Typo="Typo.h4" Class="mb-4">Customers</MudText>
 
-<button class="btn btn-primary mb-3" @onclick="AddNew">+ New Customer</button>
+<MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add"
+           OnClick="AddNew" Class="mb-3">New Customer</MudButton>
 
-@if (result is null)
-{
-    <p><em>Loading...</em></p>
-}
-else if (result.Items.Count == 0)
-{
-    <p>No customers found.</p>
-}
-else
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Company</th>
-                <th>Contact</th>
-                <th>City</th>
-                <th>Country</th>
-                <th>Phone</th>
-                <th style="width:150px">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var c in result.Items)
-            {
-                <tr>
-                    <td>@c.CompanyName</td>
-                    <td>@c.ContactName</td>
-                    <td>@c.City</td>
-                    <td>@c.Country</td>
-                    <td>@c.Phone</td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-primary" @onclick="() => Edit(c)">Edit</button>
-                        <button class="btn btn-sm btn-outline-danger" @onclick="() => Delete(c)">Delete</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+<MudTable T="Customer" Items="@result?.Items" Hover="true" Striped="true" Dense="true"
+          Loading="@(result is null)" Elevation="1">
+    <HeaderContent>
+        <MudTh>Company</MudTh>
+        <MudTh>Contact</MudTh>
+        <MudTh>City</MudTh>
+        <MudTh>Country</MudTh>
+        <MudTh>Phone</MudTh>
+        <MudTh Style="width:150px">Actions</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Company">@context.CompanyName</MudTd>
+        <MudTd DataLabel="Contact">@context.ContactName</MudTd>
+        <MudTd DataLabel="City">@context.City</MudTd>
+        <MudTd DataLabel="Country">@context.Country</MudTd>
+        <MudTd DataLabel="Phone">@context.Phone</MudTd>
+        <MudTd>
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary"
+                           OnClick="@(() => Edit(context))" aria-label="Edit" />
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error"
+                           OnClick="@(() => Delete(context))" aria-label="Delete" />
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No customers found.</MudText>
+    </NoRecordsContent>
+</MudTable>
 
-    <div class="d-flex align-items-center gap-3">
-        <button class="btn btn-outline-secondary" disabled="@(page <= 1)" @onclick="PrevPage">Previous</button>
-        <span>Page @result.Page of @result.TotalPages (@result.TotalCount total)</span>
-        <button class="btn btn-outline-secondary" disabled="@(page >= result.TotalPages)" @onclick="NextPage">Next</button>
+@if (result is not null && result.TotalCount > 0)
+{
+    <div class="d-flex align-center gap-3 mt-3">
+        <MudButton Variant="Variant.Outlined" Disabled="@(page <= 1)" OnClick="PrevPage">Previous</MudButton>
+        <MudText>Page @result.Page of @result.TotalPages (@result.TotalCount total)</MudText>
+        <MudButton Variant="Variant.Outlined" Disabled="@(page >= result.TotalPages)" OnClick="NextPage">Next</MudButton>
     </div>
 }
 

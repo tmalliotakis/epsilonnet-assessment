@@ -1,4 +1,13 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@inject IHttpContextAccessor HttpContextAccessor
+@inject NavigationManager Nav
+
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
 <div class="page">
     <div class="sidebar">
@@ -6,7 +15,23 @@
     </div>
 
     <main>
-        <div class="top-row px-4">
+        <div class="top-row px-4 gap-3">
+            <AuthorizeView Context="authState">
+                <Authorized>
+                    <MudText Typo="Typo.body2" Class="d-flex align-center">
+                        <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Small" Class="me-1" />
+                        @authState.User.Identity?.Name
+                    </MudText>
+                    <EditForm Model="this" method="post" OnValidSubmit="Logout" FormName="logout-top">
+                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Color="Color.Primary"
+                                   Size="Size.Small" StartIcon="@Icons.Material.Filled.Logout">Logout</MudButton>
+                    </EditForm>
+                </Authorized>
+                <NotAuthorized>
+                    <MudButton Href="login" Variant="Variant.Text" Color="Color.Primary"
+                               Size="Size.Small" StartIcon="@Icons.Material.Filled.Login">Login</MudButton>
+                </NotAuthorized>
+            </AuthorizeView>
             <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
         </div>
 
@@ -21,3 +46,13 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    private async Task Logout()
+    {
+        await HttpContextAccessor.HttpContext!.SignOutAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme);
+
+        Nav.NavigateTo("login");
+    }
+}

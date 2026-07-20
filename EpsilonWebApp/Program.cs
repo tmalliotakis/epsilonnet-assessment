@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,6 +79,9 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+// MudBlazor UI framework
+builder.Services.AddMudServices();
+
 // Blazor
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
@@ -85,9 +89,11 @@ builder.Services.AddRazorComponents()
 
 var app = builder.Build();
 
-// Auto-apply migrations on startup (with retry for Docker SQL Server warm-up)
-using (var scope = app.Services.CreateScope())
+// Auto-apply migrations on startup (with retry for Docker SQL Server warm-up).
+// Skipped under the "Testing" environment, where integration tests use an in-memory database.
+if (!app.Environment.IsEnvironment("Testing"))
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<AppDbContext>>();
     var retries = 10;
@@ -134,3 +140,6 @@ app.MapRazorComponents<App>()
     .AddAdditionalAssemblies(typeof(EpsilonWebApp.Client._Imports).Assembly);
 
 app.Run();
+
+// Exposed so integration tests can bootstrap the app via WebApplicationFactory<Program>.
+public partial class Program { }
