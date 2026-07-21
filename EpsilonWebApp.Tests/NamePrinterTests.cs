@@ -48,6 +48,20 @@ namespace EpsilonWebApp.Tests
             Assert.Equal(new[] { "Alice", "Bob" }, lines);
         }
 
+        [Theory]
+        [InlineData("Alice")]
+        [InlineData("Bob")]
+        [InlineData("Charlie")]
+        public void Print_WritesGivenName(string name)
+        {
+            using var writer = new StringWriter();
+            var printer = new NamePrinter(writer);
+
+            printer.Print(new Employee { Name = name });
+
+            Assert.Equal(name, writer.ToString().Trim());
+        }
+
         [Fact]
         public void Print_Null_Throws()
         {
