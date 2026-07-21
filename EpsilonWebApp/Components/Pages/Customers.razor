@@ -1,5 +1,5 @@
 @page "/customers"
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @attribute [Authorize]
 @using EpsilonWebApp.Models
 @using EpsilonWebApp.Services
