@@ -1,0 +1,137 @@
+@page "/customers"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@attribute [Authorize]
+@using EpsilonWebApp.Models
+@using EpsilonWebApp.Services
+@inject ICustomerService CustomerService
+@inject IJSRuntime JS
+
+<PageTitle>Customers</PageTitle>
+
+<MudText Typo="Typo.h4" Class="mb-4">Customers</MudText>
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add"
+           OnClick="AddNew" Class="mb-3">New Customer</MudButton>
+
+<MudTable T="Customer" Items="@result?.Items" Hover="true" Striped="true" Dense="true"
+          Loading="@(result is null)" Elevation="1">
+    <HeaderContent>
+        <MudTh>Company</MudTh>
+        <MudTh>Contact</MudTh>
+        <MudTh>City</MudTh>
+        <MudTh>Country</MudTh>
+        <MudTh>Phone</MudTh>
+        <MudTh Style="width:150px">Actions</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Company">@context.CompanyName</MudTd>
+        <MudTd DataLabel="Contact">@context.ContactName</MudTd>
+        <MudTd DataLabel="City">@context.City</MudTd>
+        <MudTd DataLabel="Country">@context.Country</MudTd>
+        <MudTd DataLabel="Phone">@context.Phone</MudTd>
+        <MudTd>
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary"
+                           OnClick="@(() => Edit(context))" aria-label="Edit" />
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error"
+                           OnClick="@(() => Delete(context))" aria-label="Delete" />
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No customers found.</MudText>
+    </NoRecordsContent>
+</MudTable>
+
+@if (result is not null && result.TotalCount > 0)
+{
+    <div class="d-flex align-center gap-3 mt-3">
+        <MudButton Variant="Variant.Outlined" Disabled="@(page <= 1)" OnClick="PrevPage">Previous</MudButton>
+        <MudText>Page @result.Page of @result.TotalPages (@result.TotalCount total)</MudText>
+        <MudButton Variant="Variant.Outlined" Disabled="@(page >= result.TotalPages)" OnClick="NextPage">Next</MudButton>
+    </div>
+}
+
+@if (showForm)
+{
+    <CustomerFormDialog Model="editing"
+                        Title="@(isNew ? "New Customer" : "Edit Customer")"
+                        OnSave="Save"
+                        OnCancel="Cancel" />
+}
+
+@code {
+    private PagedResult<Customer>? result;
+    private int page = 1;
+    private const int pageSize = 10;
+    private bool showForm;
+    private bool isNew;
+    private Customer editing = new();
+
+    protected override async Task OnInitializedAsync() => await Load();
+
+    private async Task Load() => result = await CustomerService.GetPagedAsync(page, pageSize);
+
+    private void AddNew()
+    {
+        editing = new Customer();
+        isNew = true;
+        showForm = true;
+    }
+
+    private void Edit(Customer c)
+    {
+        editing = new Customer
+        {
+            Id = c.Id,
+            CompanyName = c.CompanyName,
+            ContactName = c.ContactName,
+            Address = c.Address,
+            City = c.City,
+            Region = c.Region,
+            PostalCode = c.PostalCode,
+            Country = c.Country,
+            Phone = c.Phone
+        };
+        isNew = false;
+        showForm = true;
+    }
+
+    private async Task Save()
+    {
+        if (isNew)
+            await CustomerService.CreateAsync(editing);
+        else
+            await CustomerService.UpdateAsync(editing.Id, editing);
+
+        showForm = false;
+        await Load();
+    }
+
+    private void Cancel() => showForm = false;
+
+    private async Task Delete(Customer c)
+    {
+        var confirmed = await JS.InvokeAsync<bool>("confirm", $"Delete '{c.CompanyName}'?");
+        if (!confirmed) return;
+
+        await CustomerService.DeleteAsync(c.Id);
+
+        if (result is not null && result.Items.Count == 1 && page > 1)
+            page--;
+
+        await Load();
+    }
+
+    private async Task PrevPage()
+    {
+        if (page <= 1) return;
+        page--;
+        await Load();
+    }
+
+    private async Task NextPage()
+    {
+        if (result is null || page >= result.TotalPages) return;
+        page++;
+        await Load();
+    }
+}

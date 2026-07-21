@@ -6,6 +6,10 @@
     <Nullable>enable</Nullable>
     <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
     <StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
+    <!-- Workaround for a .NET 10 SDK bug that throws a duplicate-key error in the
+         static web asset compression task when building this net9.0 WASM project.
+         Compression is only a build/publish optimization and does not affect runtime. -->
+    <CompressionEnabled>false</CompressionEnabled>
   </PropertyGroup>
 
   <ItemGroup>
